@@ -13,7 +13,7 @@
 <body>
   <div id="app"></div>
 
-  <!-- Modal de instruções (versão simplificada com emojis) -->
+  <!-- Modal de instruções (versão maior e refinada) -->
   <div
     class="modal fade"
     id="startModal"
@@ -23,7 +23,7 @@
     data-bs-backdrop="static"
     data-bs-keyboard="false"
   >
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content shadow-lg rounded-4 border-0">
         <div class="modal-header bg-primary text-white border-0">
           <h5 class="modal-title fw-bold" id="startModalLabel">
@@ -31,26 +31,26 @@
           </h5>
         </div>
         <div class="modal-body p-4">
-          <p class="fs-5 text-center">
-            Teste seus conhecimentos em Cláusulas SQL.
+          <p class="fs-5 text-center mb-4">
+            Prepare-se para um desafio! Teste seus conhecimentos em Cláusulas SQL de forma rápida e objetiva.
           </p>
-          <hr class="my-3">
+          
           <ul class="list-group list-group-flush fs-6">
-            <li class="list-group-item">
-              ⏰ Responda as perguntas no seu tempo.
+            <li class="list-group-item py-2">
+              ⏰ Responda às perguntas no seu próprio ritmo.
             </li>
-            <li class="list-group-item">
-              👉 É preciso selecionar uma alternativa para avançar.
+            <li class="list-group-item py-2">
+              👉 Selecione uma resposta para poder avançar para a próxima questão.
             </li>
-            <li class="list-group-item">
-              🏆 Ao finalizar, clique em "Enviar" para ver seu resultado.
+            <li class="list-group-item py-2">
+              🏆 Ao finalizar, clique em <strong>Enviar</strong> para conferir sua pontuação.
             </li>
           </ul>
         </div>
         <div class="modal-footer border-0 justify-content-center pb-4">
           <button
             type="button"
-            class="btn btn-success btn-lg px-5"
+            class="btn btn-success btn-lg px-5 shadow-sm"
             id="start-btn"
           >
             🚀 Começar!
