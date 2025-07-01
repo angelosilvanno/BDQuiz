@@ -1,30 +1,59 @@
+/* --- ESTILOS GERAIS E LAYOUT --- */
 body {
   background-color: #f8f9fa;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 1rem; /* Melhor usar rem e padding menor para mobile */
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-main {
-  max-width: 700px;
+/* O container já é adicionado pelo JS, não precisa de estilo para o main */
+
+/* --- HEADER E TÍTULOS --- */
+main h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.25rem;
+}
+
+/* --- PROGRESSO E CRONÔMETRO --- */
+#progress, #timer {
+  font-weight: 600;
+  color: #212529;
+}
+
+/* --- CARD DA QUESTÃO E ANIMAÇÕES --- */
+.card {
+  /* Adiciona uma transição suave ao trocar de questão */
+  transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+}
+
+.card-title {
+  font-size: 1.25rem; /* Garante consistência */
+}
+
+/* Melhora a UX das opções de resposta */
+.form-check-label {
+  cursor: pointer;
   width: 100%;
 }
 
+.form-check:hover {
+  background-color: #e9ecef;
+  border-radius: 0.25rem;
+}
+
+/* --- FEEDBACK E RESULTADO FINAL --- */
 #result {
+  /* Mantido seu estilo original, que é ótimo! */
   font-weight: 700;
   font-size: 1.3rem;
-  color: #198754; /* verde bootstrap */
   opacity: 0;
   transform: translateY(10px);
   transition: opacity 0.4s ease, transform 0.4s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
   margin-top: 1.25rem;
+  /* Classes de alerta do Bootstrap já controlam o resto */
 }
 
 #result.show {
@@ -32,9 +61,38 @@ main {
   transform: translateY(0);
 }
 
-#progress {
-  font-weight: 600;
-  color: #212529;
-  margin-bottom: 1rem;
-  text-align: center;
+/* --- TELA DE REVISÃO FINAL --- */
+#quiz-container h5 {
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #dee2e6;
+}
+
+#quiz-container .list-group-item {
+  padding: 0.75rem 1rem;
+  border-color: #e9ecef;
+  font-size: 0.95rem;
+}
+
+/* Detalhes dentro da lista de erros (caso decida reativá-los) */
+#quiz-container .list-group-item .ps-2 {
+  font-size: 0.9rem;
+}
+
+/* --- BOTÕES --- */
+.btn {
+  /* Transição suave para todos os botões */
+  transition: all 0.2s ease-in-out;
+}
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 576px) {
+  body {
+    /* Remove o alinhamento central em telas pequenas para aproveitar melhor o espaço */
+    align-items: flex-start;
+  }
+  main h1 {
+    font-size: 2rem;
+  }
 }
