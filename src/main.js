@@ -3,7 +3,6 @@ import './style.css';
 
 const app = document.querySelector('#app');
 
-// HTML principal agora envolvido por um <div class="container"> para garantir a responsividade.
 app.innerHTML = `
 <div class="container py-4">
   <main style="display:none;">
@@ -37,7 +36,6 @@ app.innerHTML = `
 </div>
 `;
 
-// Seleção de todos os elementos do DOM
 const main = app.querySelector('main');
 const quizContainer = document.getElementById('quiz-container');
 const prevBtn = document.getElementById('prev-btn');
@@ -49,16 +47,12 @@ const progressDiv = document.getElementById('progress');
 const timerDiv = document.getElementById('timer');
 const restartBtn = document.getElementById('restart-btn');
 
-// Modal do Bootstrap
 const startModal = new bootstrap.Modal(document.getElementById('startModal'));
 const startBtn = document.getElementById('start-btn');
 
-// Estado da aplicação
 let currentQuestion = 0;
 let timerInterval = null;
 let secondsElapsed = 0;
-
-// --- FUNÇÕES DO CRONÔMETRO ---
 
 function formatTime(seconds) {
   const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
@@ -78,8 +72,6 @@ function startTimer() {
 function stopTimer() {
   clearInterval(timerInterval);
 }
-
-// --- FUNÇÕES DE LÓGICA DO QUIZ ---
 
 function showQuestion(index) {
   progressDiv.textContent = `Pergunta ${index + 1} de ${quizData.length}`;
@@ -166,7 +158,6 @@ function calculateAndShowResults() {
   const percentage = (score / quizData.length) * 100;
   const timeTaken = formatTime(secondsElapsed);
 
-  // Exibe o resultado final
   resultDiv.innerHTML = `
     <h4 class="alert-heading">Resultado Final!</h4>
     <p>Você acertou <strong>${score} de ${quizData.length}</strong> questões (${percentage.toFixed(0)}%).</p>
@@ -176,10 +167,8 @@ function calculateAndShowResults() {
   resultDiv.classList.add(percentage >= 70 ? 'alert-success' : 'alert-warning');
   resultDiv.style.display = 'block';
 
-  // Exibe a revisão das respostas
   showAnswersReview();
 
-  // Esconde botões de navegação e mostra o de reiniciar
   navButtons.style.display = 'none';
   submitBtn.style.display = 'none';
   restartBtn.style.display = 'block';
@@ -191,8 +180,7 @@ function showAnswersReview() {
 
   quizData.forEach((q, index) => {
     const userAnswer = sessionStorage.getItem(`bdquiz-answer-${index}`);
-    const correctAnswer = q.answer;
-    const isCorrect = userAnswer === correctAnswer;
+    const isCorrect = userAnswer === q.answer;
 
     if (isCorrect) {
       correctAnswersHtml.push(`
@@ -203,12 +191,7 @@ function showAnswersReview() {
     } else {
       incorrectAnswersHtml.push(`
         <li class="list-group-item">
-          <div class="fw-bold">Questão ${index + 1}: ${q.question}</div>
-          <div class="ps-2 mt-1">
-            <span class="text-danger">Sua resposta:</span> ${userAnswer || "Não respondida"}
-            <br>
-            <span class="text-success">Resposta correta:</span> ${correctAnswer}
-          </div>
+          <strong>Questão ${index + 1}:</strong> ${q.question}
         </li>
       `);
     }
@@ -238,16 +221,13 @@ function showAnswersReview() {
 
 
 function resetQuiz() {
-  // Limpa o armazenamento da sessão
   for (let i = 0; i < quizData.length; i++) {
     sessionStorage.removeItem(`bdquiz-answer-${i}`);
   }
   
-  // Reseta o estado
   currentQuestion = 0;
   stopTimer();
 
-  // Atualiza a UI para o estado inicial
   resultDiv.style.display = 'none';
   restartBtn.style.display = 'none';
   navButtons.style.display = 'flex';
@@ -255,8 +235,6 @@ function resetQuiz() {
   startTimer();
   showQuestion(currentQuestion);
 }
-
-// --- EVENT LISTENERS ---
 
 startBtn.addEventListener('click', () => {
   startModal.hide();
@@ -290,7 +268,4 @@ submitBtn.addEventListener('click', () => {
 
 restartBtn.addEventListener('click', resetQuiz);
 
-// --- INICIALIZAÇÃO ---
-
-// Abre o modal automaticamente ao carregar a página
 startModal.show();
