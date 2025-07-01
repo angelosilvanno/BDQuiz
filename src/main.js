@@ -3,8 +3,9 @@ import './style.css';
 
 const app = document.querySelector('#app');
 
-// HTML principal injetado, agora com placeholders para o cronômetro e botão de reiniciar
+// HTML principal agora envolvido por um <div class="container"> para garantir a responsividade.
 app.innerHTML = `
+<div class="container py-4">
   <main style="display:none;">
     <header class="mb-4 text-center">
       <h1 class="fw-bold text-primary">BDQuiz</h1>
@@ -33,6 +34,7 @@ app.innerHTML = `
       Reiniciar Quiz
     </button>
   </main>
+</div>
 `;
 
 // Seleção de todos os elementos do DOM
@@ -184,51 +186,56 @@ function calculateAndShowResults() {
 }
 
 function showAnswersReview() {
-  let reviewHtml = quizData.map((q, index) => {
+  const correctAnswersHtml = [];
+  const incorrectAnswersHtml = [];
+
+  quizData.forEach((q, index) => {
     const userAnswer = sessionStorage.getItem(`bdquiz-answer-${index}`);
     const correctAnswer = q.answer;
     const isCorrect = userAnswer === correctAnswer;
 
-    const optionsHtml = q.options.map(opt => {
-      let labelClass = '';
-      let icon = '';
-
-      if (opt === correctAnswer) {
-        labelClass = 'text-success fw-bold';
-        icon = '✅';
-      }
-      if (opt === userAnswer && !isCorrect) {
-        labelClass = 'text-danger';
-        icon = '❌';
-      }
-      
-      return `
-        <div class="form-check my-2">
-          <input type="radio" class="form-check-input" disabled ${opt === userAnswer ? 'checked' : ''}>
-          <label class="form-check-label ${labelClass}">
-            ${icon} ${opt}
-          </label>
-        </div>
-      `;
-    }).join('');
-
-    return `
-      <div class="card shadow-sm mb-3">
-        <div class="card-body">
-          <h2 class="card-title h5">${index + 1}. ${q.question}</h2>
-          <div class="user-answer mt-2 ${isCorrect ? 'text-success' : 'text-danger'}">
-            Sua resposta: ${userAnswer || "Não respondida"}
-            ${isCorrect ? '' : `<br><span class="text-success">Resposta correta: ${correctAnswer}</span>`}
+    if (isCorrect) {
+      correctAnswersHtml.push(`
+        <li class="list-group-item">
+          <strong>Questão ${index + 1}:</strong> ${q.question}
+        </li>
+      `);
+    } else {
+      incorrectAnswersHtml.push(`
+        <li class="list-group-item">
+          <div class="fw-bold">Questão ${index + 1}: ${q.question}</div>
+          <div class="ps-2 mt-1">
+            <span class="text-danger">Sua resposta:</span> ${userAnswer || "Não respondida"}
+            <br>
+            <span class="text-success">Resposta correta:</span> ${correctAnswer}
           </div>
-          <hr>
-          <form>${optionsHtml}</form>
-        </div>
+        </li>
+      `);
+    }
+  });
+
+  const reviewHtml = `
+    <div class="row g-3">
+      <div class="col-12 col-md-6">
+        <h5 class="text-success">Acertos ✅</h5>
+        ${correctAnswersHtml.length > 0
+          ? `<ul class="list-group">${correctAnswersHtml.join('')}</ul>`
+          : '<p class="text-muted">Nenhum acerto.</p>'
+        }
       </div>
-    `;
-  }).join('');
+      <div class="col-12 col-md-6">
+        <h5 class="text-danger">Erros ❌</h5>
+        ${incorrectAnswersHtml.length > 0
+          ? `<ul class="list-group">${incorrectAnswersHtml.join('')}</ul>`
+          : '<p class="text-muted">Parabéns, nenhum erro!</p>'
+        }
+      </div>
+    </div>
+  `;
 
   quizContainer.innerHTML = reviewHtml;
 }
+
 
 function resetQuiz() {
   // Limpa o armazenamento da sessão
