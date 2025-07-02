@@ -33,7 +33,7 @@ cd bdquiz
 3️⃣ Abra o projeto no seu navegador.
 
 ```bash
-npm run dev .
+npm run dev
 ```
 
 ## 📦 Tecnologias usadas
