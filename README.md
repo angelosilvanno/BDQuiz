@@ -45,5 +45,5 @@ npm run dev
 
 ## 📄 Licença
 
-* Este projeto está licenciado sob a licença MIT — utilize, adapte e distribua conforme as melhores práticas de governança corporativa.
+* Este projeto está licenciado sob a licença MIT - acesse os detalhes [LICENSE.md](https://github.com/link_da_licenca)
 
