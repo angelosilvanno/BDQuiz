@@ -21,7 +21,7 @@ Funcionalidades incluídas:
 1️⃣ Clone o repositório:
 
 ```bash
-git clone https://seurepositorio.git
+git clone https://github.com/angelosilvanno/BDQuiz
 ```
 
 2️⃣ Acesse a pasta do projeto:
@@ -30,12 +30,10 @@ git clone https://seurepositorio.git
 cd bdquiz
 ```
 
-3️⃣ Abra o arquivo `index.html` diretamente no seu navegador.
-
-> Opcionalmente, se quiser rodar via servidor local:
+3️⃣ Abra o projeto no seu navegador.
 
 ```bash
-npx serve .
+npm run dev .
 ```
 
 ## 📦 Tecnologias usadas
