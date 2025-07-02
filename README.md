@@ -43,7 +43,15 @@ npm run dev
 * ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
 * ![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
 
+## 👷 Autores
+
+Mencione todos aqueles que ajudaram a levantar o projeto desde o seu início, colaboradores.
+
+* **Nome do dev** - *Função realizada* - [nome_do_dev](https://github.com/link_do_Perfil)
+  
 ## 📄 Licença
 
-* Este projeto está licenciado sob a licença MIT - acesse os detalhes [LICENSE.md](https://github.com/link_da_licenca)
+* Este projeto está licenciado sob a licença MIT - acesse os detalhes [LICENSE.md](https://github.com/angelosilvanno/BDQuiz/tree/master?tab=MIT-1-ov-file)
+
+
 
