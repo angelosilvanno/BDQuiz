@@ -4,7 +4,7 @@ Uma plataforma de quiz interativa para validar conhecimentos sobre funções agr
 
 ## 🔥 Introdução
 
-O **BDQuiz** tem como objetivo proporcionar uma experiência gamificada de reforço técnico sobre cláusulas SQL avançadas. O usuário navega entre as perguntas, valida as respostas em tempo real e visualiza seu desempenho de forma clara e intuitiva.
+O **BDQuiz** faz parte de um projeto acadêmico da disciplina **PET2734 - BANCO DE DADOS** e tem como objetivo proporcionar uma experiência gamificada de reforço técnico sobre cláusulas SQL. O usuário navega entre as perguntas, valida as respostas em tempo real e visualiza seu desempenho de forma clara e intuitiva.
 
 Funcionalidades incluídas:
 
