@@ -3,7 +3,7 @@ body {
   background-color: #f8f9fa;
   min-height: 100vh;
   display: flex;
-  align-items: flex-start; 
+  align-items: flex-start;
   justify-content: center;
   padding: 0.5rem;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -21,14 +21,17 @@ main h1 {
   transition: font-size 0.3s ease;
 }
 
-/* --- PROGRESSO E CRONÔMETRO --- */
-#progress, #timer {
-  font-weight: 600;
-  color: #212529;
+/* --- CARD DA QUESTÃO COM TIMER --- */
+.card-header {
+  background-color: #f8f9fa;
   font-size: 0.9rem;
+  font-weight: 600;
 }
 
-/* --- CARD DA QUESTÃO --- */
+#question-timer-bar {
+  transition: width 1s linear, background-color 0.5s ease;
+}
+
 .card-title {
   font-size: 1.15rem;
   line-height: 1.4;
@@ -71,7 +74,7 @@ main h1 {
   transition: all 0.2s ease-in-out;
 }
 
-/* --- ESTILOS PARA A NOVA TELA DE RESULTADOS (ABAS) --- */
+/* --- ESTILOS PARA ABAS --- */
 .nav-tabs {
   border-bottom: 2px solid #dee2e6;
 }
@@ -103,48 +106,33 @@ main h1 {
   padding: 1rem 1.25rem;
 }
 
-/* ============================================= */
-/* --- MELHORIAS PARA TABLETS (min-width: 768px) --- */
-/* ============================================= */
+/* --- MEDIA QUERIES --- */
 @media (min-width: 768px) {
   body {
     align-items: center;
     padding: 1.5rem;
   }
-
   main h1 {
     font-size: 2.2rem;
   }
-
   .card-title {
     font-size: 1.25rem;
   }
-
-  #progress, #timer {
-    font-size: 1rem;
-  }
-
   #result {
     font-size: 1.2rem;
   }
 }
 
-/* ======================================================= */
-/* --- OTIMIZAÇÕES PARA NOTEBOOKS E DESKTOPS (min-width: 1200px) --- */
-/* ======================================================= */
 @media (min-width: 1200px) {
   html {
     font-size: 17px;
   }
-  
   .container {
     max-width: 960px;
   }
-
   main h1 {
     font-size: 2.8rem;
   }
-
   #result {
     font-size: 1.4rem;
   }

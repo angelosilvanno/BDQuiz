@@ -10,11 +10,6 @@ app.innerHTML = `
       <h1 class="fw-bold text-primary">BDQuiz</h1>
       <p class="text-muted">Demonstre sua expertise em funções agregadas e subconsultas SQL</p>
     </header>
-
-    <div class="d-flex justify-content-between align-items-center mb-2 text-muted">
-      <div id="progress"></div>
-      <div id="timer" class="fw-bold">Tempo: 00:00</div>
-    </div>
     
     <div id="quiz-container" class="position-relative mb-3"></div>
 
@@ -43,16 +38,16 @@ const nextBtn = document.getElementById('next-btn');
 const navButtons = document.getElementById('nav-buttons');
 const submitBtn = document.getElementById('submit-btn');
 const resultDiv = document.getElementById('result');
-const progressDiv = document.getElementById('progress');
-const timerDiv = document.getElementById('timer');
 const restartBtn = document.getElementById('restart-btn');
 
 const startModal = new bootstrap.Modal(document.getElementById('startModal'));
 const startBtn = document.getElementById('start-btn');
 
 let currentQuestion = 0;
-let timerInterval = null;
-let secondsElapsed = 0;
+let totalTimeInterval = null;
+let questionTimerInterval = null;
+let totalSecondsElapsed = 0;
+const TIME_PER_QUESTION = 60; // 60 segundos por questão
 
 function formatTime(seconds) {
   const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
@@ -60,65 +55,111 @@ function formatTime(seconds) {
   return `${mins}:${secs}`;
 }
 
-function startTimer() {
-  secondsElapsed = 0;
-  timerDiv.textContent = `Tempo: ${formatTime(secondsElapsed)}`;
-  timerInterval = setInterval(() => {
-    secondsElapsed++;
-    timerDiv.textContent = `Tempo: ${formatTime(secondsElapsed)}`;
+function startTotalTimer() {
+  totalSecondsElapsed = 0;
+  totalTimeInterval = setInterval(() => {
+    totalSecondsElapsed++;
   }, 1000);
 }
 
-function stopTimer() {
-  clearInterval(timerInterval);
+function stopAllTimers() {
+  clearInterval(totalTimeInterval);
+  clearInterval(questionTimerInterval);
+}
+
+function moveToNextQuestion(isTimeout = false) {
+  clearInterval(questionTimerInterval);
+
+  if (isTimeout) {
+    sessionStorage.setItem(`bdquiz-answer-${currentQuestion}`, 'Tempo esgotado');
+  } else {
+    if (!isAnswerSelected()) return;
+    saveAnswer(currentQuestion);
+  }
+
+  if (currentQuestion < quizData.length - 1) {
+    currentQuestion++;
+    showQuestion(currentQuestion);
+  } else {
+    calculateAndShowResults();
+  }
 }
 
 function showQuestion(index) {
-  progressDiv.textContent = `Pergunta ${index + 1} de ${quizData.length}`;
   const q = quizData[index];
-
+  
   quizContainer.innerHTML = `
     <div class="card shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Pergunta ${index + 1} de ${quizData.length}</span>
+        <span id="question-timer-text" class="fw-bold"></span>
+      </div>
+      <div class="progress" style="height: 5px; border-radius: 0;">
+        <div id="question-timer-bar" class="progress-bar" role="progressbar" style="width: 100%;"></div>
+      </div>
       <div class="card-body">
         <h2 class="card-title text-primary fw-semibold">${index + 1}. ${q.question}</h2>
         <form>
-          ${q.options
-            .map((opt, i) => `
-              <div class="form-check my-2">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  name="q${index}"
-                  id="q${index}-opt${i}"
-                  value="${opt}"
-                />
-                <label class="form-check-label" for="q${index}-opt${i}">
-                  ${opt}
-                </label>
-              </div>
-            `).join('')}
+          ${q.options.map((opt, i) => `
+            <div class="form-check my-2">
+              <input class="form-check-input" type="radio" name="q${index}" id="q${index}-opt${i}" value="${opt}" />
+              <label class="form-check-label" for="q${index}-opt${i}">${opt}</label>
+            </div>
+          `).join('')}
           <div class="invalid-feedback">Por favor, selecione uma alternativa.</div>
         </form>
       </div>
     </div>
   `;
-
+  
+  startQuestionTimer();
   restoreAnswer(index);
   updateButtons();
   resultDiv.style.display = 'none';
 }
 
-function isAnswerSelected() {
-    const feedback = quizContainer.querySelector('.invalid-feedback');
-    const selected = document.querySelector(`input[name="q${currentQuestion}"]:checked`);
-    
-    if (!selected) {
-        feedback.style.display = 'block';
-        return false;
+function startQuestionTimer() {
+  clearInterval(questionTimerInterval);
+  let timeRemaining = TIME_PER_QUESTION;
+
+  const timerText = document.getElementById('question-timer-text');
+  const timerBar = document.getElementById('question-timer-bar');
+
+  const updateDisplay = () => {
+    timerText.textContent = `Tempo: 00:${String(timeRemaining).padStart(2, '0')}`;
+    const percentage = (timeRemaining / TIME_PER_QUESTION) * 100;
+    timerBar.style.width = `${percentage}%`;
+
+    timerBar.classList.remove('bg-success', 'bg-warning', 'bg-danger');
+    if (percentage <= 25) {
+      timerBar.classList.add('bg-danger');
+    } else if (percentage <= 50) {
+      timerBar.classList.add('bg-warning');
+    } else {
+      timerBar.classList.add('bg-success');
     }
-    
-    feedback.style.display = 'none';
-    return true;
+  };
+
+  updateDisplay();
+
+  questionTimerInterval = setInterval(() => {
+    timeRemaining--;
+    updateDisplay();
+    if (timeRemaining <= 0) {
+      moveToNextQuestion(true); // Avança automaticamente por timeout
+    }
+  }, 1000);
+}
+
+function isAnswerSelected() {
+  const feedback = quizContainer.querySelector('.invalid-feedback');
+  const selected = document.querySelector(`input[name="q${currentQuestion}"]:checked`);
+  if (!selected) {
+    feedback.style.display = 'block';
+    return false;
+  }
+  feedback.style.display = 'none';
+  return true;
 }
 
 function saveAnswer(index) {
@@ -130,7 +171,7 @@ function saveAnswer(index) {
 
 function restoreAnswer(index) {
   const saved = sessionStorage.getItem(`bdquiz-answer-${index}`);
-  if (saved) {
+  if (saved && saved !== 'Tempo esgotado') {
     const inputToCheck = document.querySelector(`input[name="q${index}"][value="${saved}"]`);
     if (inputToCheck) inputToCheck.checked = true;
   }
@@ -145,7 +186,7 @@ function updateButtons() {
 }
 
 function calculateAndShowResults() {
-  stopTimer();
+  stopAllTimers();
 
   let score = 0;
   for (let i = 0; i < quizData.length; i++) {
@@ -156,19 +197,18 @@ function calculateAndShowResults() {
   }
 
   const percentage = (score / quizData.length) * 100;
-  const timeTaken = formatTime(secondsElapsed);
+  const timeTaken = formatTime(totalSecondsElapsed);
 
   resultDiv.innerHTML = `
     <h4 class="alert-heading">Resultado Final!</h4>
     <p>Você acertou <strong>${score} de ${quizData.length}</strong> questões (${percentage.toFixed(0)}%).</p>
-    <p class="mb-0">Tempo total: <strong>${timeTaken}</strong>.</p>
+    <p class="mb-0"><strong>Tempo total:</strong> ${timeTaken}</p>
   `;
   resultDiv.classList.remove('alert-success', 'alert-warning');
   resultDiv.classList.add(percentage >= 70 ? 'alert-success' : 'alert-warning');
   resultDiv.style.display = 'block';
 
   showAnswersReview();
-
   navButtons.style.display = 'none';
   submitBtn.style.display = 'none';
   restartBtn.style.display = 'block';
@@ -190,11 +230,18 @@ function showAnswersReview() {
         </li>
       `);
     } else {
+      let feedbackHtml;
+      if (userAnswer === 'Tempo esgotado') {
+        feedbackHtml = `<p class="mb-1 text-warning small"><strong>Sua resposta:</strong> Tempo esgotado</p>`;
+      } else {
+        feedbackHtml = `<p class="mb-1 text-danger small"><strong>Sua resposta:</strong> ${userAnswer || "Não respondida"}</p>`;
+      }
+
       incorrectAnswersHtml.push(`
         <li class="list-group-item">
           <p class="mb-2"><strong>Questão ${index + 1}:</strong> ${q.question}</p>
           <div class="ps-2">
-            <p class="mb-1 text-danger small"><strong>Sua resposta:</strong> ${userAnswer || "Não respondida"}</p>
+            ${feedbackHtml}
             <p class="mb-2 text-success small"><strong>Resposta correta:</strong> ${q.answer}</p>
             <div class="alert alert-info small p-2">
               <strong>Por quê?</strong> ${q.explanation}
@@ -204,67 +251,55 @@ function showAnswersReview() {
       `);
     }
   });
-  
-  const hasErrors = incorrectAnswersHtml.length > 0;
 
+  const hasErrors = incorrectAnswersHtml.length > 0;
   const reviewHtml = `
     <ul class="nav nav-tabs nav-fill mb-3" id="resultTabs" role="tablist">
       <li class="nav-item" role="presentation">
-        <button class="nav-link ${hasErrors ? 'active' : ''}" id="errors-tab" data-bs-toggle="tab" data-bs-target="#errors-pane" type="button" role="tab" aria-controls="errors-pane" aria-selected="${hasErrors}">
+        <button class="nav-link ${hasErrors ? 'active' : ''}" id="errors-tab" data-bs-toggle="tab" data-bs-target="#errors-pane" type="button" role="tab">
           Erros ❌ <span class="badge rounded-pill text-bg-danger">${incorrectAnswersHtml.length}</span>
         </button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link ${!hasErrors ? 'active' : ''}" id="correct-tab" data-bs-toggle="tab" data-bs-target="#correct-pane" type="button" role="tab" aria-controls="correct-pane" aria-selected="${!hasErrors}">
+        <button class="nav-link ${!hasErrors ? 'active' : ''}" id="correct-tab" data-bs-toggle="tab" data-bs-target="#correct-pane" type="button" role="tab">
           Acertos ✅ <span class="badge rounded-pill text-bg-success">${correctAnswersHtml.length}</span>
         </button>
       </li>
     </ul>
-
     <div class="tab-content" id="resultTabsContent">
-      <div class="tab-pane fade ${hasErrors ? 'show active' : ''}" id="errors-pane" role="tabpanel" aria-labelledby="errors-tab" tabindex="0">
-        ${hasErrors
-          ? `<ul class="list-group shadow-sm">${incorrectAnswersHtml.join('')}</ul>`
-          : '<div class="card p-4 text-center text-muted">Parabéns, nenhum erro!</div>'
-        }
+      <div class="tab-pane fade ${hasErrors ? 'show active' : ''}" id="errors-pane" role="tabpanel">
+        ${hasErrors ? `<ul class="list-group shadow-sm">${incorrectAnswersHtml.join('')}</ul>` : '<div class="card p-4 text-center text-muted">Parabéns, nenhum erro!</div>'}
       </div>
-      <div class="tab-pane fade ${!hasErrors ? 'show active' : ''}" id="correct-pane" role="tabpanel" aria-labelledby="correct-tab" tabindex="0">
-        ${correctAnswersHtml.length > 0
-          ? `<ul class="list-group shadow-sm">${correctAnswersHtml.join('')}</ul>`
-          : '<div class="card p-4 text-center text-muted">Nenhum acerto.</div>'
-        }
+      <div class="tab-pane fade ${!hasErrors ? 'show active' : ''}" id="correct-pane" role="tabpanel">
+        ${correctAnswersHtml.length > 0 ? `<ul class="list-group shadow-sm">${correctAnswersHtml.join('')}</ul>` : '<div class="card p-4 text-center text-muted">Nenhum acerto.</div>'}
       </div>
     </div>
   `;
-
   quizContainer.innerHTML = reviewHtml;
 }
-
 
 function resetQuiz() {
   for (let i = 0; i < quizData.length; i++) {
     sessionStorage.removeItem(`bdquiz-answer-${i}`);
   }
-  
   currentQuestion = 0;
-  stopTimer();
-
+  stopAllTimers();
   resultDiv.style.display = 'none';
   restartBtn.style.display = 'none';
   navButtons.style.display = 'flex';
-  
-  startTimer();
+  startTotalTimer();
   showQuestion(currentQuestion);
 }
 
 startBtn.addEventListener('click', () => {
   startModal.hide();
   main.style.display = 'block';
-  startTimer();
+  startTotalTimer();
   showQuestion(currentQuestion);
 });
 
 prevBtn.addEventListener('click', () => {
+  clearInterval(questionTimerInterval);
   saveAnswer(currentQuestion);
   if (currentQuestion > 0) {
     currentQuestion--;
@@ -272,17 +307,11 @@ prevBtn.addEventListener('click', () => {
   }
 });
 
-nextBtn.addEventListener('click', () => {
-  if (!isAnswerSelected()) return;
-  saveAnswer(currentQuestion);
-  if (currentQuestion < quizData.length - 1) {
-    currentQuestion++;
-    showQuestion(currentQuestion);
-  }
-});
+nextBtn.addEventListener('click', () => moveToNextQuestion(false));
 
 submitBtn.addEventListener('click', () => {
   if (!isAnswerSelected()) return;
+  clearInterval(questionTimerInterval);
   saveAnswer(currentQuestion);
   calculateAndShowResults();
 });
