@@ -185,13 +185,21 @@ function showAnswersReview() {
     if (isCorrect) {
       correctAnswersHtml.push(`
         <li class="list-group-item">
-          <strong>Questão ${index + 1}:</strong> ${q.question}
+          <p class="mb-1"><strong>Questão ${index + 1}:</strong> ${q.question}</p>
+          <p class="mb-0 text-muted small">Sua resposta: <span class="text-success fw-bold">${userAnswer}</span></p>
         </li>
       `);
     } else {
       incorrectAnswersHtml.push(`
         <li class="list-group-item">
-          <strong>Questão ${index + 1}:</strong> ${q.question}
+          <p class="mb-2"><strong>Questão ${index + 1}:</strong> ${q.question}</p>
+          <div class="ps-2">
+            <p class="mb-1 text-danger small"><strong>Sua resposta:</strong> ${userAnswer || "Não respondida"}</p>
+            <p class="mb-2 text-success small"><strong>Resposta correta:</strong> ${q.answer}</p>
+            <div class="alert alert-info small p-2">
+              <strong>Por quê?</strong> ${q.explanation}
+            </div>
+          </div>
         </li>
       `);
     }
@@ -199,18 +207,18 @@ function showAnswersReview() {
 
   const reviewHtml = `
     <div class="row g-3">
-      <div class="col-12 col-md-6">
+      <div class="col-12 col-lg-6">
         <h5 class="text-success">Acertos ✅</h5>
         ${correctAnswersHtml.length > 0
-          ? `<ul class="list-group">${correctAnswersHtml.join('')}</ul>`
-          : '<p class="text-muted">Nenhum acerto.</p>'
+          ? `<ul class="list-group shadow-sm">${correctAnswersHtml.join('')}</ul>`
+          : '<div class="card p-3 text-muted">Nenhum acerto.</div>'
         }
       </div>
-      <div class="col-12 col-md-6">
+      <div class="col-12 col-lg-6">
         <h5 class="text-danger">Erros ❌</h5>
         ${incorrectAnswersHtml.length > 0
-          ? `<ul class="list-group">${incorrectAnswersHtml.join('')}</ul>`
-          : '<p class="text-muted">Parabéns, nenhum erro!</p>'
+          ? `<ul class="list-group shadow-sm">${incorrectAnswersHtml.join('')}</ul>`
+          : '<div class="card p-3 text-muted">Parabéns, nenhum erro!</div>'
         }
       </div>
     </div>
