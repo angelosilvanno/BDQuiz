@@ -204,21 +204,34 @@ function showAnswersReview() {
       `);
     }
   });
+  
+  const hasErrors = incorrectAnswersHtml.length > 0;
 
   const reviewHtml = `
-    <div class="row g-3">
-      <div class="col-12 col-lg-6">
-        <h5 class="text-success">Acertos ✅</h5>
-        ${correctAnswersHtml.length > 0
-          ? `<ul class="list-group shadow-sm">${correctAnswersHtml.join('')}</ul>`
-          : '<div class="card p-3 text-muted">Nenhum acerto.</div>'
+    <ul class="nav nav-tabs nav-fill mb-3" id="resultTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link ${hasErrors ? 'active' : ''}" id="errors-tab" data-bs-toggle="tab" data-bs-target="#errors-pane" type="button" role="tab" aria-controls="errors-pane" aria-selected="${hasErrors}">
+          Erros ❌ <span class="badge rounded-pill text-bg-danger">${incorrectAnswersHtml.length}</span>
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link ${!hasErrors ? 'active' : ''}" id="correct-tab" data-bs-toggle="tab" data-bs-target="#correct-pane" type="button" role="tab" aria-controls="correct-pane" aria-selected="${!hasErrors}">
+          Acertos ✅ <span class="badge rounded-pill text-bg-success">${correctAnswersHtml.length}</span>
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="resultTabsContent">
+      <div class="tab-pane fade ${hasErrors ? 'show active' : ''}" id="errors-pane" role="tabpanel" aria-labelledby="errors-tab" tabindex="0">
+        ${hasErrors
+          ? `<ul class="list-group shadow-sm">${incorrectAnswersHtml.join('')}</ul>`
+          : '<div class="card p-4 text-center text-muted">Parabéns, nenhum erro!</div>'
         }
       </div>
-      <div class="col-12 col-lg-6">
-        <h5 class="text-danger">Erros ❌</h5>
-        ${incorrectAnswersHtml.length > 0
-          ? `<ul class="list-group shadow-sm">${incorrectAnswersHtml.join('')}</ul>`
-          : '<div class="card p-3 text-muted">Parabéns, nenhum erro!</div>'
+      <div class="tab-pane fade ${!hasErrors ? 'show active' : ''}" id="correct-pane" role="tabpanel" aria-labelledby="correct-tab" tabindex="0">
+        ${correctAnswersHtml.length > 0
+          ? `<ul class="list-group shadow-sm">${correctAnswersHtml.join('')}</ul>`
+          : '<div class="card p-4 text-center text-muted">Nenhum acerto.</div>'
         }
       </div>
     </div>
